@@ -7,7 +7,6 @@ from openpyxl import Workbook, load_workbook
 
 TIMER_MINUTES = 25
 XLSX_FILE = Path.home() / "Desktop" / "timesheet.xlsx"
-ICON_PATH = "trackr.icns"
 
 def notify(title, message):
     rumps.notification(title, "", message)
@@ -35,7 +34,7 @@ def append_to_xlsx(task, tag, start_dt, end_dt, duration_str):
 
 class TrackrTimer(threading.Thread):
     def __init__(self, task, tag, app):
-        super().__init__()
+        super().__init__(daemon=True)
         self.task = task
         self.tag = tag
         self.app = app
@@ -55,9 +54,10 @@ class TrackrTimer(threading.Thread):
         duration_str = f"{duration_sec // 60:02d}:{duration_sec % 60:02d}"
         append_to_xlsx(self.task, self.tag, self.start_time, end_time, duration_str)
 
-        status = "finished" if self.running else "stopped early"
+        message = f"'{self.task}' [{self.tag}]"
         notify("Timer Complete" if self.running else "Timer Stopped",
-               f"'{self.task}' [{self.tag}] {status}.")
+               f"{message} finished!" if self.running else f"{message} was stopped early.")
+
         self.app.title = "trackr"
         rumps.quit_application()
 
@@ -66,12 +66,15 @@ class TrackrTimer(threading.Thread):
 
 class TrackrApp(rumps.App):
     def __init__(self):
-        super().__init__("trackr", quit_button=None, icon=ICON_PATH)
+        super().__init__("trackr", quit_button=None)
+
         task_input = rumps.Window("What are you going to work on?", "Task", ok="OK").run()
         tag_input = rumps.Window("Add a tag or category for this task.", "Tag", ok="OK").run()
-        if not task_input.text or not tag_input.text:
+
+        if not task_input or not task_input.text or not tag_input or not tag_input.text:
             rumps.alert("Task or Tag not entered. Exiting app.")
             rumps.quit_application()
+
         self.timer = TrackrTimer(task_input.text, tag_input.text, self)
         self.timer.start()
         self.menu = ["Stop Early"]
