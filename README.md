@@ -3,6 +3,8 @@
 Trackr is a simple macOS menu bar app that combines a Pomodoro timer with a timesheet tracker. Track your tasks, categorize them with tags, and automatically save the work session logs in an XLSX file.
 
 ## Features
+![Trackr Menu Bar](image/menu_bar.png)
+![Notification Alert](image/alert.png)
 - 25-minute Pomodoro timer
 - Task and Tag input at the start of each session
 - Menu bar timer display
