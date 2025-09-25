@@ -77,12 +77,9 @@ pip3 install pyinstaller
 pyinstaller \
     --windowed \
     --name "trackr" \
-    --add-data "trackr.icns:." \
+    --icon trackr.icns \
     trackr.py
 ```
-- `--windowed`: no terminal window appears
-- `--name`: sets the app name
-- `--add-data`: includes the icon in the app bundle
 
 3. After building, find your app in:
 
